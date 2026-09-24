@@ -8,7 +8,7 @@ alerts in real time through a desktop dashboard or a command-line interface.
 ![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-![HIDS Dashboard](docs/screenshot.png)
+![HIDS Dashboard](docs/04-file-events.png)
 
 ## Features
 
@@ -81,6 +81,45 @@ python hids.py
    ```
 5. After a legitimate change, click **Rebuild Baseline** to mark the current files as trusted.
 
+## Screenshots and test results
+
+These screenshots come from a test run on Windows 11 that used the steps in [Try it out](#try-it-out).
+
+### 1. Idle state
+![Idle dashboard](docs/02-idle.png)
+
+This is the dashboard before monitoring starts. The status is **Stopped**, the alert counter is 0 and the log is empty. The four controls are Start, Stop, Clear output and Rebuild baseline.
+
+### 2. File integrity violation and suspicious connection
+![Integrity and network alerts](docs/03-integrity-and-network.png)
+
+On startup the HIDS loads the saved SHA-256 baseline and finds that `important.txt` no longer matches its trusted hash. It also finds an open connection to port **4444**, the default port for Metasploit reverse shells. When the file is edited again, the real-time monitor (`watchdog`) reports it immediately and the next hash check confirms the change.
+
+### 3. File creation and rename
+![File creation and rename alerts](docs/04-file-events.png)
+
+A new file dropped into the protected folder is reported at once. Renaming it (`New Text Document.txt` to `hello.txt`) produces a **File moved** alert with the old and new paths. Attackers often drop and rename files like this when staging a payload.
+
+### 4. Persistence across restarts
+![Detections after restart](docs/05-restart-persistence.png)
+
+After a restart the tool still remembers what is trusted, because the baseline is stored on disk. The tampered file and the suspicious connection are both detected again within the first scan.
+
+### 5. Suspicious process detection
+![Process alert](docs/06-process-detection.png)
+
+A harmless program was copied and named `nc.exe` (Netcat, a tool attackers use for backdoors and reverse shells). The process monitor matched the name exactly and reported its **PID**, so an analyst could investigate or end it.
+
+### 6. Full test session
+![Full session](docs/01-full-test-session.png)
+
+This is one complete session from start to stop, with **8 alerts** covering every detection layer: file modification, integrity failure, creation, rename, deletion, a suspicious process and a suspicious network connection. After **Stop Monitoring** the file monitor shuts down cleanly.
+
+### 7. Persistent alert log
+![alerts.log](docs/07-alerts-log.png)
+
+Every event is also written to `logs/alerts.log` with a millisecond timestamp. Alerts are logged at `WARNING` level and status messages at `INFO` level, so they can be reviewed later or sent to a SIEM.
+
 ## Configuration
 
 Edit these lists at the top of `hids.py` or `hid_ui.py`:
@@ -97,6 +136,7 @@ HIDS_Project/
 ├── hid_ui.py          # Tkinter dashboard
 ├── hids.py            # Command-line version
 ├── requirements.txt
+├── docs/              # Screenshots
 ├── monitored_files/   # Files to protect
 └── logs/alerts.log    # Created at runtime
 ```
