@@ -1,4 +1,4 @@
-# Runtime data (generated per machine)
+﻿# Runtime data (generated per machine)
 logs/
 baseline_hashes.txt
 
@@ -14,4 +14,4 @@ __pycache__/
 venv/
 
 # Personal notes
-LINKEDIN_POST.md
+LINKEDIN_POST.txt
