@@ -1,0 +1,17 @@
+# Runtime data (generated per machine)
+logs/
+baseline_hashes.txt
+
+# Files used for local testing
+monitored_files/*
+!monitored_files/.gitkeep
+*.exe
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Personal notes
+LINKEDIN_POST.md
