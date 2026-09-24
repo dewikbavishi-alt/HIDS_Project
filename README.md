@@ -8,8 +8,7 @@ alerts in real time through a desktop dashboard or a command-line interface.
 ![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-<!-- Add a screenshot of the dashboard here:
-![HIDS Dashboard](docs/screenshot.png) -->
+![HIDS Dashboard](docs/screenshot.png)
 
 ## Features
 
@@ -70,8 +69,16 @@ python hids.py
 
 1. Put a few files in `monitored_files/` and click **Start Monitoring**. The first run records their hashes as the trusted baseline.
 2. **File tampering:** edit or delete one of those files. An integrity alert appears.
-3. **Suspicious process:** copy any harmless program (for example `notepad.exe`), rename the copy `nc.exe` and run it. A process alert appears.
-4. **Suspicious port:** in PowerShell, run `Test-NetConnection 127.0.0.1 -Port 4444` while a listener is open on that port.
+3. **Suspicious process:** copy a harmless program and name the copy `nc.exe`, then run it. A process alert appears within 10 seconds:
+   ```powershell
+   Copy-Item C:\Windows\System32\PING.EXE $env:TEMP\nc.exe
+   & $env:TEMP\nc.exe -t 127.0.0.1
+   ```
+4. **Suspicious port:** open a local connection on port 4444 and keep it open. A network alert appears within 10 seconds:
+   ```powershell
+   $l = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback, 4444); $l.Start()
+   $c = [System.Net.Sockets.TcpClient]::new('127.0.0.1', 4444)
+   ```
 5. After a legitimate change, click **Rebuild Baseline** to mark the current files as trusted.
 
 ## Configuration
